@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="UTF-8">
+  <title>pismo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: #ffd6e0;
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .envelope-container {
+      position: relative;
+      width: 350px;
+      height: 350px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .envelope {
+      position: relative;
+      width: 300px;
+      height: 200px;
+      z-index: 2;
+    }
+    /* Envelope body */
+    .envelope-body {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 300px;
+      height: 160px;
+      background: #ffb6c1;
+      border: 2.5px solid #f06292;
+      border-radius: 0 0 18px 18px;
+      box-shadow: 0 8px 24px rgba(240,98,146,0.11), 0 2px 8px rgba(0,0,0,0.07);
+      z-index: 2;
+      overflow: visible;
+    }
+    /* Envelope flap */
+    .envelope-flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 300px;
+      height: 110px;
+      background: #ff8fab;
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+      border: 2.5px solid #f06292;
+      border-bottom: none;
+      clip-path: polygon(0 0, 50% 100%, 100% 0);
+      z-index: 4;
+      box-shadow: 0 4px 16px rgba(240,98,146,0.08);
+      transition: transform 0.7s cubic-bezier(0.4, 2, 0.6, 1);
+      transform-origin: top center;
+    }
+    .open .envelope-flap {
+      transform: rotateX(-120deg);
+      z-index: 1;
+    }
+    /* Heart Seal */
+    .heart {
+      position: absolute;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 44px;
+      height: 40px;
+      z-index: 10;
+    }
+    .heart-shape {
+      width: 44px;
+      height: 40px;
+      background: #f06292;
+      position: absolute;
+      left: 0; top: 0;
+      clip-path: polygon(
+        50% 80%,
+        0% 40%,
+        20% 10%,
+        50% 25%,
+        80% 10%,
+        100% 40%
+      );
+      box-shadow: 0 2px 8px #f0629240;
+    }
+    /* Prompt */
+    .prompt {
+      position: absolute;
+      top: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #fff;
+      font-family: 'Pacifico', cursive;
+      text-shadow: 0 2px 6px #f06292;
+      font-size: 1.3rem;
+      z-index: 15;
+      animation: pulse 1.2s infinite alternate;
+      letter-spacing: 1px;
+      background: rgba(240,98,146,0.18);
+      padding: 2px 16px;
+      border-radius: 12px;
+      pointer-events: none;
+      user-select: none;
+    }
+    @keyframes pulse {
+      from { opacity: 1; }
+      to { opacity: 0.7; }
+    }
+    /* Letter */
+    .letter {
+      position: absolute;
+      left: 50%;
+      bottom: 40px;
+      width: 240px;
+      min-height: 120px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 8px 36px rgba(240,98,146,0.13), 0 2px 8px rgba(0,0,0,0.07);
+      border: 2px solid #f06292;
+      font-family: 'Roboto', sans-serif;
+      font-size: 1.2rem;
+      text-align: center;
+      z-index: 20;
+      padding: 24px 14px 16px 14px;
+      opacity: 0;
+      transform: translate(-50%, 60px);
+      transition: opacity 0.7s, transform 0.7s cubic-bezier(0.4, 2, 0.6, 1);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-blend-mode: lighten;
+      overflow: hidden;
+    }
+    .open .letter {
+      opacity: 1;
+      transform: translate(-50%, -130px);
+      transition-delay: 0.3s;
+    }
+    .letter-content {
+      font-family: 'Pacifico', cursive;
+      color: #f06292;
+      font-size: 1.3rem;
+      margin-bottom: 14px;
+      margin-top: 2px;
+      word-break: break-word;
+      letter-spacing: 0.5px;
+    }
+    .hidden {
+      opacity: 0;
+      transition: opacity 0.5s;
+      height: 0;
+    }
+    .visible {
+      opacity: 1;
+      transition: opacity 0.5s;
+      height: auto;
+    }
+    .second-text {
+      color: #f06292;
+      font-family: 'Roboto', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-top: 10px;
+      letter-spacing: 0.5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="envelope-container" id="envelopeContainer">
+    <div class="envelope" id="envelope">
+      <div class="envelope-flap"></div>
+      <div class="envelope-body"></div>
+      <div class="heart"><div class="heart-shape"></div></div>
+      <span class="prompt">klikni me!</span>
+    </div>
+    <div class="letter" id="letter">
+      <div class="letter-content">pogledaj ispred sebe</div>
+      <div id="secondText" class="second-text hidden">
+        ali prvo uđi na viber
+      </div>
+    </div>
+  </div>
+  <script>
+    const envelopeContainer = document.getElementById('envelopeContainer');
+    const letter = document.getElementById('letter');
+    const secondText = document.getElementById('secondText');
+
+    envelopeContainer.addEventListener('click', function() {
+      if (!envelopeContainer.classList.contains('open')) {
+        envelopeContainer.classList.add('open');
+        setTimeout(() => {
+          secondText.classList.remove('hidden');
+          secondText.classList.add('visible');
+        }, 3000); // 3 seconds delay
+      }
+    });
+  </script>
+</body>
+</html>
